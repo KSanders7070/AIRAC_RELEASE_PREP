@@ -1,44 +1,44 @@
 # AIRAC Release Prep
 
-## Program Overview
-
-The AIRAC Release Prep is designed to assist in preparing ARTCC files with FE-Buddy output files for upload to the vNAS server in preparation for an AIRAC cycle change.
-
-### Basic Description
+## Basic Description
 
 - **Program Name**: AIRAC Release Prep
 - **Executable Name**: AIRAC Release Prep.exe
-- **Purpose**: Assists in preparing ARTCC & FE-Buddy output files for upload to the vNAS server in preparation for an AIRAC cycle change.
+- **Purpose**: Assists in preparing ARTCC facility files for upload to the vNAS Data-Admin site every AIRAC cycle.
 - **GitHub Repository**: [AIRAC Release Prep](https://github.com/KSanders7070/AIRAC_RELEASE_PREP)
 
 ## General Function
 
 The AIRAC Release Prep performs the following tasks:
 
-1. **FE-Buddy Output Folder**:
-   - The user selects the FE-Buddy Output folder created by running the FE-Buddy program.
-   - This folder contains subdirectories and files necessary for the prep process.
+1. **Directory Management**:
+   - Creates preference .json files per facility ID in the `%localappdata%\Ksanders7070_AIRAC_RLS_PREP` directory.
+   - A temp directory (`%temp%\ksanders7070_airac_rls_prep_temp`) may be created and is deleted at program close. If found at launch, the contents will be deleted.
+   - Creates a sub-directory `UPLOAD_TO_vNAS` within the user-selected FE-Buddy_Output folder. If one already exists, advise the user that the contents of the UPLOAD_TO_vNAS folder will be deleted prior to beginning any processing of new files, allowing the user to cancel and try again if need-be.
+     - Will also create another sub-directory `UPLOAD_TO_vNAS\Video Maps`
+   - Moves processed and prepared files to the appropriate directories for upload to the vNAS server.
+     - Combined Alias file: `FE-Buddy_Output\UPLOAD_TO_vNAS`
+     - GeoJSONs/Video Maps: `FE-Buddy_Output\UPLOAD_TO_vNAS\Video Maps`
 
-2. **Alias File Preparation**:
-   - Retrieves the facility's custom alias command file from either a local directory or download URL.
-     - If downloading, the first line should be ".FeUseOnly" for verification. Example:
+2. **Data Retrieval**:
+   - Retrieves required data from the user-selected FE-Buddy Output folder.
+   - Retrieves the facility's Custom Alias command file from either a URL or local directory that the user specifies.
+     - If downloading from URL, the first line should be ".FeUseOnly" in order to verify the download was successful. Example:
        ```
        .FeUseOnly This line is here for Facility Engineer automation systems. This must be the first line of the alias file and should not be edited.
        ```
-   - Combines the custom alias command file with selected alias files from the `FE-BUDDY_Output\ALIAS` directory into a single alias file (Combined_<facility ID>_Alias.txt) and outputs it to the `FE-BUDDY_Output\UPLOAD_TO_vNAS` directory.
-     - The custom alias command file content must be written to the final combined file first.
-     - Excludes files named "AliasTestFile.txt" and "DUPLICATE_COMMANDS.txt".
 
-3. **Video Maps Preparation**:
+3. **Alias File Preparation**:
+   - Prompts the user to select which alias files from the `FE-BUDDY_Output\ALIAS` folder they want included in the combined alias file.
+     - Saves these selections as a preference for this facility ID for future use and automatically selects the previously selected files if they exsist.
+     - This program will not prompt the user to be able to select "AliasTestFile.txt" and "DUPLICATE_COMMANDS.txt".
+   - Combines the custom alias command file with the user-selected alias files from the FE-Buddy folder into a single alias file `Combined_<facility ID>_Alias.txt` and outputs it to the `FE-BUDDY_Output\UPLOAD_TO_vNAS` directory.
+     - The custom alias command file content will be written to the final combined file first.
+
+4. **Video Maps Preparation**:
    - Copies selected .geojson files from the `FE-BUDDY_Output\CRC` directory to the `FE-BUDDY_Output\UPLOAD_TO_vNAS\VIDEO_MAPS` directory.
    - Allows optional renaming of .geojson files and formatting (single-line or pretty-print).
    - The user can add specific CRC Defaults values to each geojson file.
-
-4. **Directory Management**:
-   - Creates preference .json files per facility ID in the `%localappdata%\Ksanders7070_AIRAC_RLS_PREP` directory.
-   - A temp directory (`%temp%\ksanders70_airac_rls_prep_temp`) may be created and is deleted at program close and remade at launch if found.
-   - Creates necessary directories in the `FE-BUDDY_Output\UPLOAD_TO_vNAS` folder if they do not exist.
-   - Moves prepared files to the appropriate directories for upload to the vNAS server.
 
 5. **Error Handling and Logging**:
    - Provides feedback on the status of each operation and logs errors encountered during the process.
