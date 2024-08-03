@@ -6,6 +6,7 @@
 - **Executable Name**: AIRAC Release Prep.exe
 - **Purpose**: Assists in preparing ARTCC facility files for upload to the vNAS Data-Admin site every AIRAC cycle.
 - **GitHub Repository**: [AIRAC Release Prep](https://github.com/KSanders7070/AIRAC_RELEASE_PREP)
+- **Code Language**: C# for processing and WPF for GUI.
 
 ## General Function
 
