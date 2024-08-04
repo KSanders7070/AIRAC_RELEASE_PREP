@@ -1,50 +1,86 @@
-# GeoJSON File Structure and Rules for CRC Software
+# CRC GeoJSON File Structure and Rules
 
 ## File Composition
 
-- GeoJSON files represent various types of spatial data elements for VATSIM air traffic control simulations using the CRC software.
-- In this document, we will cover LineString (including MultiLineString), Symbol (Point), and Text (Point) features. CRC is capable to rendering polygon features but only under certain circumstances and we will not cover that here.
+- Consolidated Radar Client (CRC) utilizes GeoJSONs ([RFC-7946 format](https://datatracker.ietf.org/doc/html/rfc7946)) to represent various types of spatial data elements.
+- In this document, we will cover LineString (including MultiLineString), Symbol (Point), and Text (Point) features. CRC is capable of rendering polygon features but only under certain circumstances and we will not cover that here.
 
-## Feature Types and Properties
+## Feature Types and Associated Properties
 
-- **Line**: Represented by `LineString` or `MultiLineString`. Properties may include `style` (e.g., solid, dashed), `thickness`, `bcg`, and `filters`.
-  - Example:
+- **Line**: Represented by `"type":"LineString"` or `"type":"MultiLineString"`. Properties may include:
+  - `bcg`
+  - `filters`
+  - `style`
+  - `thickness`
+    - Example:
+
+      ```json
+      {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{"bcg":3,"filters":[3],"style":"Solid","thickness":1}}]}
+      ```
+
+- **Symbol**: Represented by `"type":"Point"`. Properties may include:
+  - `bcg`
+  - `filters`
+  - `style`
+  - `size`
+    - Example:
+
+      ```json
+      {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[-176.64,51.88]},"properties":{"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}}]}
+      ```
+
+- **Text**: Represented by `"type":"Point"`. Properties may include:
+  - `bcg`
+  - `filters`
+  - `text`
+  - `size`
+  - `underline`
+  - `xOffset`
+  - `yOffset`
+  - `opaque`
+    - Example:
+
+      ```json
+      {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[-176.64,51.88]},"properties":{"bcg":3,"filters":[3],"text":["PADK","ADAK"]"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}}]}
+      ```
+
+## CRC Defaults and Structure
+
+- CRC Defaults are features within the geojson file that define the property values to be assigned to all other features in that file that do not have defined properties themselves. Properties in a non-CRC Defaults feature may be referred to as "Overriding Properties".
+- CRC Defaults are defined in specific `"type":"Point"` features with property key/values of `"isLineDefaults":true`, `"isSymbolDefaults":true`, and `"isTextDefaults":true`. These are properties assigned to the other features but are not rendered by CRC.
+- Though, not required, CRC Default features should be placed at the beginning of the GeoJSON file prior to any rendered features for clarity and organizational purposes.
+- These CRC Default features are often just referred to as "isDefaults" or "CRC Defaults".
+- All of the following examples will display in a CRC-ERAM window:
+  - Line Features + CRC Defaults
 
     ```json
-    {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{"bcg":3,"filters":[3],"style":"Solid","thickness":1}}]}
+    {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.69],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}}]}
     ```
 
-- **Symbol**: Represented by `Point`. Properties can be `style` (denoting different navigational symbols like VOR, NDB), `size`, and occasionally, `color`.
-  - Example:
+  - Symbol Features + CRC Defaults
 
     ```json
-    {"type":"Feature","geometry":{"type":"Point","coordinates":[90.0,180.0]},"properties":{"isSymbolDefaults":true,"bcg":18,"filters":[18],"style":"airport","size":1}}
+    {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isSymbolDefaults":true,"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.9527,32.540442]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.021344,32.600622]},"properties":{"style":"airwayIntersections"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.225421,32.782208]},"properties":{"style":"vor"}}]}
     ```
 
-- **Text**: Represented by `Point`. Properties include `text` (an array of strings for multiline text), and optionally `size`, `underline`, `xOffset`, `yOffset`, and `opaque`.
-  - Example:
+  - Text Features + CRC Defaults
 
     ```json
-    {"type":"Feature","geometry":{"type":"Point","coordinates":[90.0,180.0]},"properties":{"isTextDefaults":true,"bcg":18,"filters":[18],"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}}
+    {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isTextDefaults":true,"bcg":3,"filters":[3],"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.9527,32.540442]},"properties":{"text":["TIJ"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.021344,32.600622]},"properties":{"text":["TEYON"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.225421,32.782208]},"properties":{"text":["MZB"]}}]}
     ```
 
-## Defaults and Structure
-
-- Defaults for lines, symbols, and text are defined in specific `Point` features with properties like `isLineDefaults`, `isSymbolDefaults`, and `isTextDefaults`. These are not rendered but set default properties for subsequent features.
-- Default features should be placed at the beginning of the GeoJSON file for clarity and organizational purposes.
-- These defaults are often referred to as "isDefaults" or "CRC Defaults".
 - When the CRC Defaults nor the feature properties define a required properties key/value, CRC assigns the following by automatically:
-  - **LINE:**
+  - LINE:
     - Filters = (not assigned)
     - BCG = 1
     - Style = solid
     - Thickness = 1
-  - **SYMBOL:**
+  - SYMBOL:
     - Filters = (not assigned)
     - BCG = 1
     - Style = vor
     - Size = 1
-  - **TEXT:**
+  - TEXT:
     - Filters = (not assigned)
     - BCG = 1
     - Text = (not assigned)
@@ -53,6 +89,7 @@
     - xOffset = 0
     - yOffset = 0
     - Opaque = false
+- For geojson data to display on an ERAM window within CRC, there must be at least a defined Filters value (and text value for text features) in either the CRC Defaults feature (covered below) or the individual overriding feature properties (covered below).
 
 ## Handling Multiple Types
 
@@ -105,7 +142,7 @@
     - All line, symbol, and text features will display in a ERAM window within CRC.
   - Example_Lines_With_Overriding_Properties.geojson
     - Contains Line features but has overriding properties in one of the features.
-    - All line features will display in a ERAM window within CRC with the values of `bcg=3, filters3, style=Solid, thickness=1` except the one feature that has overriding properties which will display: `bcg=3, filters=4, style=Dashed, thickness=3`
+    - All line features will display in a ERAM window within CRC with the values of `bcg=3, filters=3, style=Solid, thickness=1` except the one feature that has overriding properties which will display: `bcg=3, filters=4, style=Dashed, thickness=3`
       - You may notice that the feature with the overriding properties does not define the `bcg` property but will still display with `bcg=3`, that is because when the overriding properties do not define a certain property but that property is defined in the isDefault, it still takes on the characteristics laid out in the isDefault value.
   - Example_Lines_and_Text_but_no_isDefault_for_Text.geojson ???
     - Contains Line and text features but the text features have no isDefaults and therefore the text will not display in an ERAM window within CRC.
