@@ -26,7 +26,7 @@ The AIRAC Release Prep performs the following tasks:
    - Retrieves the facility's Custom Alias command file from either a URL or local directory that the user specifies.
      - If downloading from URL, the first line should be ".FeUseOnly" in order to verify the download was successful. The user should be notified of this requirement. Example of this line at the top of the custom alias command file:
 
-       ```
+       ```text
        .FeUseOnly This line is here for Facility Engineer automation systems. This must be the first line of the alias file and should not be edited.
 
        ; ZZZ Custom Alias Command created by Joe Someone
