@@ -127,9 +127,11 @@ The following is an example of a geojson with Line features and an isDefault fea
 {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{"filters":[4],"style":"Dashed","thickness":3}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}}]}
 ```
 
+*Note: Scripts like [this one](https://github.com/KSanders7070/Clean_CRC_GEOJSON_PROPERTIES) can assist in "clearning up" the properties section of each feature by removing all Overriding Defaults, while retaining the isDefaults feature property values.*
+
 ## Key/Value Assignments - CRC Auto-Assigned Defaults
 
-When the required keys/values are not defined via either isDefaults or Default Overrides, CRC assigns the following by automatically:  
+When the required keys/values are not defined via either isDefaults or Default Overrides, CRC assigns the following automatically:  
 *Note: Filters and Text keys/values are not eligable to be auto-assigned by CRC therefore, they must be defined via another method or that feature will not display on an ERAM window.*
 
 - LINE:
@@ -148,9 +150,9 @@ When the required keys/values are not defined via either isDefaults or Default O
   - yOffset = 0
   - Opaque = false
 
-## Multiple Feature Types in single GeoJSON
+## Multiple Feature Types in a GeoJSON
 
-Though supported, having more than one type of feature (lines, symbols, and text) in a single geojson file can complicate management of the file and hinder flexibility. Scripts like [this one](https://github.com/KSanders7070/Split_CRC_GeoJSON_Feature_Types) can split a single GeoJSON into multiple files based on feature type, each retaining relevant defaults at the top.
+If the manager of the geojsons finds that having more than one type of feature (lines, symbols, and text) in a geojson file is complicating management of the file and hindering flexibility, scripts like [this one](https://github.com/KSanders7070/Split_CRC_GeoJSON_Feature_Types) can split a single GeoJSON into multiple files based on feature type, each retaining relevant defaults at the top.
 
 ## Multiple isDefaults Features for Same Type
 
