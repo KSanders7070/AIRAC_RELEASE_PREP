@@ -8,7 +8,7 @@ In this document, we will cover LineString (including MultiLineString), Symbol (
 
 - CRC is capable of rendering polygon features for "Tower-CAB" windows but that will not be covered here.
 
-## GeoJson Feature Types & Associated Keys
+## GeoJson Feature Types & Associated Keys/Values
 
 For CRC to know how to display the data appropriately within a ERAM window, certain keys and values must be defined. Defining these values are done using multiple methods (isDefaults, Overriding Properties, or CRC Auto-Assigned) that will be discussed later.
 
@@ -69,7 +69,7 @@ When the user wishes to display the data contained within a geoJson file on thei
 
 - Default Features
   - A feature within the geojson that defines the properites that will be applied to the other non-default features within the file that does not have overriding properties.
-  - Default Features may be refered to as "isDefaults"
+  - Default Features may be refered to as "isDefaults".
   - Details discussed later in the "Key/Value Assignments - isDefaults (Defaults) Features" section.
 
 - Default Overrides
@@ -135,24 +135,21 @@ Examples:
 
 ## Key/Value Assignments - Default Overrides
 
-Though, there may be isDefaults contained within the .geojson that apply values to all features, each feature may contain one or more overriding key/value that will apply to that feature alone.
+Though, there may be isDefaults contained within the .geojson that apply values to all respective features, each feature may contain one or more overriding key/value that will apply to that feature alone.
 
-If there is missing Default Overrides keys/values in a feature, the missing value is automatically assigned per the isDefaults.
-
-The following is an example of a geojson with Line features and an isDefault feature but the 2nd rendered (non-isDefault) feature has Default Overrides values of `filters = 4`, `style = Dashed`, and `thickness = 3`, overriding the isDefault values of `filters = 3`, `style = Solid`, and `thickness = 1`.
-
-- Table for clarificaiton:
-
-| **Feature Number** | **Properties**                                        | **Effective Values**                                                   | **NOTES**                                 |
-|--------------------|-------------------------------------------------------|------------------------------------------------------------------------|-------------------------------------------|
-| 1 (isDefaults)     | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`    | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The `isDefaults` contains values for all keys in the properties, so there is nothing for CRC to auto-assign.   |
-| 2                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank and therefore, inherits values from the defaults.        |
-| 3                  | `filters: 4`<br>`style: Dashed`<br>`thickness: 3`           | `bcg: 3`<br>`filters: 4`<br>`style: Dashed`<br>`thickness: 3`    | The properties override the defaults with new values for `filters`, `style`, and `thickness`, but `bcg` retains the value defined in `isDefaults` (`3`).   |
-| 4                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank and therefore, inherits values from the defaults.        |
+The following is an example of a geojson with Line features and an isLineDefaults feature but the 2nd rendered (non-isDefault) feature has Default Override values of `filters = 4`, `style = Dashed`, and `thickness = 3`, overriding the isDefault values of `filters = 3`, `style = Solid`, and `thickness = 1`.
 
 ```json
 {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{"filters":[4],"style":"Dashed","thickness":3}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}}]}
 ```
+
+Table for clarificaiton:
+| **Feature Number** | **Properties**                                        | **Effective Values**                                                   | **Notes**                                 |
+|--------------------|-------------------------------------------------------|------------------------------------------------------------------------|-------------------------------------------|
+| 1 (isLineDefaults)     | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`    | n/a                               | The `isLineDefaults` contains values for<br>all keys in the properties, so there<br>is nothing for CRC to auto-assign.   |
+| 2                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank (no overriding<br> defaults) and therefore, inherits values<br>from the isLineDefaults.        |
+| 3                  | `filters: 4`<br>`style: Dashed`<br>`thickness: 3`           | `bcg: 3`<br>`filters: 4`<br>`style: Dashed`<br>`thickness: 3`    | The properties override the defaults with<br>new values for `filters`, `style`, and<br>`thickness`, but `bcg` retains the<br>value defined in the `isLineDefaults` feature.   |
+| 4                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank (no overriding<br> defaults) and therefore, inherits values<br>from the isLineDefaults.        |
 
 *Note: Scripts like [this one](https://github.com/KSanders7070/Clean_CRC_GEOJSON_PROPERTIES) can assist in "clearning up" the properties section of each feature by removing all Overriding Defaults, while retaining the isDefaults feature property values.*
 
