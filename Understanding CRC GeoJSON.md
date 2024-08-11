@@ -70,47 +70,67 @@ When the user wishes to display the data contained within a geoJson file on thei
 - Default Features
   - A feature within the geojson that defines the properites that will be applied to the other non-default features within the file that does not have overriding properties.
   - Default Features may be refered to as "isDefaults"
-  - Details discussed later in this document.
+  - Details discussed later in the "Key/Value Assignments - isDefaults (Defaults) Features" section.
 
 - Default Overrides
   - In a non-isDefaults feature, if the properties contains the appropriate keys/values for the feature-type, those values will be assigned to that feature and that feature alone.
     - These values will override ones contained in a Default Feature, if there is one.
-  - Details discussed later in this document.
+  - Details discussed later in the "Key/Value Assignments - Default Overrides" section.
 
 - CRC-Assigned Defaults
   - If the geojson does not have a valid isDefault or Default Overrides, CRC will assign certain properties to each feature within the geojson.
-  - Details discussed later in this document.
+  - Details discussed later in the "Key/Value Assignments - CRC Auto-Assigned Defaults" section.
 
 ## Key/Value Assignments - isDefaults (Defaults) Features
 
-isDefaults are defined in specific `"type":"Point"` features with property key/value of `"isLineDefaults":true`, `"isSymbolDefaults":true`, and `"isTextDefaults":true`.
+isDefaults are defined in specific `"type":"Point"` features with property key/value of `"isLineDefaults":true`, `"isSymbolDefaults":true`, and `"isTextDefaults":true`. These are keys/values that CRC reads and assigns to the other features but are not rendered to the display.
 
-These are keys/values assigned to the other features but are not rendered to the display.
+Though, not required, it is best-practice to place the isDefaults at the beginning of the FeatureCollection prior to any rendered features for clarity and organizational purposes. Multiple isDefaults for the same type (line, text, symbol) is discouraged and we will speak about the handling of this situation later in the "Multiple isDefaults Features for Same Type" section.
 
-Though, not required, it is best-practice to place the isDefaults at the beginning of the GeoJSON file prior to any rendered features for clarity and organizational purposes.
-
-Multiple isDefaults for the same type (line, text, symbol) is discouraged and we will speak about the handling of this situation later in this document.
-
-Though not required, utilizing `90.0,180.0` for the Coordinates will result in a standard accross facilities and increases the chance that geojson readers will display that point away from most other focus data.
+Though not required, utilizing `90.0,180.0` for the Coordinates will result in a standard accross facilities and for US localized data, it will ensure the point is not rendered in geojson viewers in the same area as your video map data.
 
 Examples:
 
-- Line Features + isDefaults
+- isLineDefaults Feature
+
+  ```json
+  {"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}}
+  ```
+
+- FeatureCollection with isLineDefaults & Line Features
 
   ```json
   {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.69],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}}]}
   ```
 
-- Symbol Features + isDefaults
+- isSymbolDefaults Feature
+
+  ```json
+  {"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isSymbolDefaults":true,"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}}
+  ```
+
+- FeatureCollection with isSymbolDefaults & Symbol Features
 
   ```json
   {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isSymbolDefaults":true,"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"style":"airwayIntersections"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"style":"vor"}}]}
   ```
 
-- Text Features + isDefaults
+- isTextDefaults Feature
+
+  ```json
+  {"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isTextDefaults":true,"bcg":3,"filters":[3],"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}}
+  ```
+
+- FeatureCollection with isTextDefaults & Text Features
 
   ```json
   {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isTextDefaults":true,"bcg":3,"filters":[3],"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"text":["TIJ"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"text":["TEYON"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"text":["MZB"]}}]}
+  ```
+
+- FeatureCollection with isLineDefaults, isSymbolDefaults, isTextDefaults + Line, Symbols, & Text Features
+
+  ```json
+  {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isSymbolDefaults":true,"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isTextDefaults":true,"bcg":3,"filters":[3],"size":1,"underline":false,"opaque":false,"xOffset":12,"yOffset":0}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"style":"airwayIntersections"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"text":["TIJ"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"text":["TEYON"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"text":["MZB"]}}]}
   ```
 
 ## Key/Value Assignments - Default Overrides
@@ -121,7 +141,14 @@ If there is missing Default Overrides keys/values in a feature, the missing valu
 
 The following is an example of a geojson with Line features and an isDefault feature but the 2nd rendered (non-isDefault) feature has Default Overrides values of `filters = 4`, `style = Dashed`, and `thickness = 3`, overriding the isDefault values of `filters = 3`, `style = Solid`, and `thickness = 1`.
 
-- For clarificaiton: the 1st and 3rd rendered features will display in ERAM with the values `filters = 3`, `style = Solid`, and `thickness = 1`, but the 2nd renedered feature will display with `filters = 4`, `style = Dashed`, and `thickness = 3`.
+- Table for clarificaiton:
+
+| **Feature Number** | **Properties**                                        | **Effective Values**                                                   | **NOTES**                                 |
+|--------------------|-------------------------------------------------------|------------------------------------------------------------------------|-------------------------------------------|
+| 1 (isDefaults)     | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`    | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The `isDefaults` contains values for all keys in the properties, so there is nothing for CRC to auto-assign.   |
+| 2                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank and therefore, inherits values from the defaults.        |
+| 3                  | `filters: 4`<br>`style: Dashed`<br>`thickness: 3`           | `bcg: 3`<br>`filters: 4`<br>`style: Dashed`<br>`thickness: 3`    | The properties override the defaults with new values for `filters`, `style`, and `thickness`, but `bcg` retains the value defined in `isDefaults` (`3`).   |
+| 4                  | `{}`                              | `bcg: 3`<br>`filters: 3`<br>`style: Solid`<br>`thickness: 1`                               | The properties section is blank and therefore, inherits values from the defaults.        |
 
 ```json
 {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{"filters":[4],"style":"Dashed","thickness":3}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}}]}
@@ -150,6 +177,12 @@ When the required keys/values are not defined via either isDefaults or Default O
   - yOffset = 0
   - Opaque = false
 
+In this following example geojson, there are Lines, Symbols, & Text features along with the isDefaults for Lines and Symbols but the isTextDefaults feature is missing. Though CRC auto-assigns the text features for most of the properties it needs, the lack of the assigned Filter default property will result in the text features not displaying in the CRC-ERAM window but, the Lines and Symbols features will. To correct this issue, the geojson manager must either create a isTextDefaults feature with a minium of a Filter property defined or place a Default Override property in each of the Text features defining the Filter value.
+
+```json
+{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isLineDefaults":true,"bcg":3,"filters":[3],"style":"Solid","thickness":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[90,180]},"properties":{"isSymbolDefaults":true,"bcg":3,"filters":[3],"style":"airwayIntersections","size":1}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.02,32.6],[-116.99,32.57]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.04,32.62],[-117.15,32.72]]},"properties":{}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[-117.25,32.86],[-117.38,33.16]]},"properties":{}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"style":"airwayIntersections"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"style":"vor"}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-116.95,32.54]},"properties":{"text":["TIJ"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.02,32.6]},"properties":{"text":["TEYON"]}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-117.22,32.78]},"properties":{"text":["MZB"]}}]}
+```
+
 ## Multiple Feature Types in a GeoJSON
 
 If the manager of the geojsons finds that having more than one type of feature (lines, symbols, and text) in a geojson file is complicating management of the file and hindering flexibility, scripts like [this one](https://github.com/KSanders7070/Split_CRC_GeoJSON_Feature_Types) can split a single GeoJSON into multiple files based on feature type, each retaining relevant defaults at the top.
@@ -160,14 +193,9 @@ If multiple isDefaults features for the same type is found in the geojson file, 
 
 Example:
 
-- 1st isLineDefault in the geojson:
-  - `bcg` = 3 `filters` = [3] `style` = Solid `thickness` = 1
-
-- 2nd isLineDefault in the geojson:
-  - `bcg` = 2 `filters` = [1] `style` = Dashed `thickness` = 2
-
-- 3rd isLineDefault in the geojson:
-  - `bcg` = 1 `filters` = [2,5] `style` = Solid
-
-- What is assigned to all line features:
-  - `bcg` = 1 `filters` = [2,5] `style` = Solid `thickness` = 2
+| Line Defaults       |  `bcg`  | `filters`  |  `style`  | `thickness` |
+|:------------------:|:-------:|:----------:|:---------:|:-----------:|
+| 1st isLineDefault  |    3    |    3     |   Solid   |      1      |
+| 2nd isLineDefault  |    2    |    1     |  Dashed   |      2      |
+| 3rd isLineDefault  |    1    |   2,5    |   Solid   |      (not defined)      |
+| Ending result    |    1    |   2,5    |   Solid   |      2      |
